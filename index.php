@@ -9,22 +9,22 @@ Kirby::plugin('medienbaecker/snippet-generator', [
 
           $json = array();
 
-          function getArray($pages) {
+          function addToArray($pages, &$json) {
             $array = array();
             foreach($pages as $page) {
-
               $parameters = array_column($page->parameters(), 'export');
               $body = array();
               $c = 0;
+
               foreach($parameters as $parameter) {
-                if(preg_match('/\s/',$parameter)) {
-                  $parameter = explode(" ", $parameter)[1];
+                if(strpos($parameter, '$') !== false) {
+                  $parameter = strstr($parameter, '$');
                 }
                 $c++;
                 $body[] = '${' . $c . ':\\' . $parameter . '}';
               }
 
-              $array[$page->title()->value()] = array(
+              $json[$page->title()->value()] = array(
                 "prefix" => '->' . $page->methodName() . '()',
                 "body" => '->' . $page->methodName() . '(' . implode($body, ", ") . ')',
                 "description" => $page->excerpt()->escape()->value(),
@@ -32,50 +32,49 @@ Kirby::plugin('medienbaecker/snippet-generator', [
               );
               
             }
-            return $array;
           }
 
           // Field methods
-          $json[] = getArray(page("docs/reference/templates/field-methods")->children()->visible());
+          addToArray(page("docs/reference/templates/field-methods")->children()->visible(), $json);
 
           // File methods
-          $json[] = getArray(page("docs/reference/objects/file")->children()->visible());
+          addToArray(page("docs/reference/objects/file")->children()->visible(), $json);
 
           // Files methods
-          $json[] = getArray(page("docs/reference/objects/files")->children()->visible());
+          addToArray(page("docs/reference/objects/files")->children()->visible(), $json);
 
           // Kirby methods
-          $json[] = getArray(page("docs/reference/objects/kirby")->children()->visible());
+          addToArray(page("docs/reference/objects/kirby")->children()->visible(), $json);
 
           // Language methods
-          $json[] = getArray(page("docs/reference/objects/language")->children()->visible());
+          addToArray(page("docs/reference/objects/language")->children()->visible(), $json);
 
           // Languages methods
-          $json[] = getArray(page("docs/reference/objects/languages")->children()->visible());
+          addToArray(page("docs/reference/objects/languages")->children()->visible(), $json);
 
           // Page methods
-          $json[] = getArray(page("docs/reference/objects/page")->children()->visible());
+          addToArray(page("docs/reference/objects/page")->children()->visible(), $json);
 
           // Pages methods
-          $json[] = getArray(page("docs/reference/objects/pages")->children()->visible());
+          addToArray(page("docs/reference/objects/pages")->children()->visible(), $json);
 
           // Pagination methods
-          $json[] = getArray(page("docs/reference/objects/pagination")->children()->visible());
+          addToArray(page("docs/reference/objects/pagination")->children()->visible(), $json);
 
           // Request methods
-          $json[] = getArray(page("docs/reference/objects/request")->children()->visible());
+          addToArray(page("docs/reference/objects/request")->children()->visible(), $json);
 
           // Session methods
-          $json[] = getArray(page("docs/reference/objects/session")->children()->visible());
+          addToArray(page("docs/reference/objects/session")->children()->visible(), $json);
 
           // Site methods
-          $json[] = getArray(page("docs/reference/objects/site")->children()->visible());
+          addToArray(page("docs/reference/objects/site")->children()->visible(), $json);
 
           // User methods
-          $json[] = getArray(page("docs/reference/objects/user")->children()->visible());
+          addToArray(page("docs/reference/objects/user")->children()->visible(), $json);
 
           // Users methods
-          $json[] = getArray(page("docs/reference/objects/users")->children()->visible());
+          addToArray(page("docs/reference/objects/users")->children()->visible(), $json);
 
           return $json;
         }
